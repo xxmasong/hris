@@ -1,0 +1,6 @@
+<IfModule mod_headers.c>
+    SetEnvIf Origin "^https://novum\.xxmasong\.site$" AccessControlAllowOrigin=$0
+    Header set Access-Control-Allow-Origin %{AccessControlAllowOrigin}e env=AccessControlAllowOrigin
+    Header set Access-Control-Allow-Credentials "true"
+</IfModule>
+
