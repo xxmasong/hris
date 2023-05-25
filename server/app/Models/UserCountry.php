@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use App\Http\Models;
-use App\Http\Props\AuthModelProps;
+use App\Http\Props\ModelProps;
 use App\Http\Props\TimeProps;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class User extends AuthModelProps
+class UserCountry extends ModelProps
 {
     use HasFactory;
 
@@ -17,16 +17,9 @@ class User extends AuthModelProps
     |--------------------------------------------------------------------------
     */
 
-    public const EMAIL = 'email';
-    public const PASSWORD = 'password';
-
-    public const PASSWORD_OLD = 'password_old';
-    public const PASSWORD_CONFIRMATION = 'password_confirmation';
-    public const PASSWORD_TEMPORARY = 'password_temporary';
-
-    private const MODEL_KEY_R = 'user';
-    public const MODEL_KEY = self::MODEL_KEY_R;
-    public const MODEL_KEY_P = self::MODEL_KEY . 's';
+    private const MODEL_KEY_R = 'user_countr';
+    public const MODEL_KEY = self::MODEL_KEY_R . 'y';
+    public const MODEL_KEY_P = self::MODEL_KEY_R . 'ies';
     public const MODEL = [
         parent::MODEL_CLASS => self::class,
         parent::GROUP => parent::NOTSET,
@@ -35,17 +28,25 @@ class User extends AuthModelProps
         parent::FOREIGN_KEY => self::MODEL_KEY . parent::ID_P,
         parent::ATTRIBUTES => [
             parent::ID => ['id'],
-            parent::NAME => ['string', 'nullable'],
-            self::EMAIL => ['string', 'unique'],
-            self::PASSWORD => ['string'],
+            User::FOREIGN_ID => ['bigInteger', 'unsigned'],
+            Country::FOREIGN_ID => ['bigInteger', 'unsigned', 'nullable'],
             TimeProps::CREATED => ['timestamp', 'nullable'],
             TimeProps::UPDATED => ['timestamp', 'nullable'],
         ],
-        parent::CONSTRAINTS => [],
+        parent::CONSTRAINTS => [
+            User::FOREIGN_ID => [
+                parent::REFERENCES => [User::FOREIGN_NAME => parent::ID],
+                parent::ACTIONS => [parent::CASCADE_ON_UPDATE, parent::CASCADE_ON_DELETE],
+            ],
+            Country::FOREIGN_ID => [
+                parent::REFERENCES => [Country::FOREIGN_NAME => parent::ID],
+                parent::ACTIONS => [parent::CASCADE_ON_UPDATE, parent::CASCADE_ON_DELETE],
+            ],
+        ],
         parent::RELATIONS => [
-            // Direct Relations ...
-            UserCategory::class => parent::ONE_TO_MANY,
-            UserCountry::class => parent::ONE_TO_ONE,
+            // Inverse Relations ...
+            User::class => parent::ONE_TO_ONE_INVERSE,
+            Country::class => parent::ONE_TO_ONE_INVERSE,
         ],
         parent::PARAMETERS => [],
     ];
@@ -63,14 +64,14 @@ class User extends AuthModelProps
      *
      * @var string
      */
-    protected $table = self::MODEL[parent::NAME];
+    protected $table = self::MODEL[self::NAME];
 
     /**
      * The index or primary key of the table.
      *
      * @var string
      */
-    protected $primaryKey = self::MODEL[parent::PRIMARY_KEY];
+    protected $primaryKey = self::MODEL[self::PRIMARY_KEY];
 
     /**
      * Indicates if the model's ID is auto-incrementing.
@@ -84,7 +85,7 @@ class User extends AuthModelProps
      *
      * @var string
      */
-    protected $keyType = parent::PK_TYPE;
+    protected $keyType = self::PK_TYPE;
 
     /**
      * Indicates if the model should be timestamped.
@@ -99,9 +100,8 @@ class User extends AuthModelProps
      * @var string[]
      */
     protected $fillable = [
-        self::NAME,
-        self::EMAIL,
-        self::PASSWORD,
+        User::FOREIGN_ID,
+        Country::FOREIGN_ID,
     ];
 
     /**
@@ -124,7 +124,6 @@ class User extends AuthModelProps
      * @var array
      */
     protected $hidden = [
-        self::PASSWORD,
         TimeProps::CREATED,
         TimeProps::UPDATED,
     ];
@@ -138,16 +137,16 @@ class User extends AuthModelProps
 
     /*
     |--------------------------------------------------------------------------
-    | Direct Relations ...
+    | Inverse Relations ...
     |--------------------------------------------------------------------------
     */
 
-    public function userCategory()
+    public function user()
     {
         return Models::establishRelation($this, __FUNCTION__);
     }
 
-    public function userCountry()
+    public function country()
     {
         return Models::establishRelation($this, __FUNCTION__);
     }
@@ -166,14 +165,5 @@ class User extends AuthModelProps
     public static function pick(string $attribute)
     {
         return self::all($attribute)->random()[$attribute];
-    }
-
-    public static function authUser()
-    {
-        $user = collect(auth()->user())->only([
-            User::NAME, User::EMAIL
-        ])->toArray();
-
-        return collect($user);
     }
 }

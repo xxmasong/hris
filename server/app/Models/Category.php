@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use App\Http\Models;
-use App\Http\Props\AuthModelProps;
+use App\Http\Props\ModelProps;
 use App\Http\Props\TimeProps;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class User extends AuthModelProps
+class Category extends ModelProps
 {
     use HasFactory;
 
@@ -17,16 +17,40 @@ class User extends AuthModelProps
     |--------------------------------------------------------------------------
     */
 
-    public const EMAIL = 'email';
-    public const PASSWORD = 'password';
+    public const WORLD = 1;
+    public const POLITICS = 2;
+    public const BUSINESS = 3;
+    public const ENTERTAINMENT = 4;
+    public const SPORTS = 5;
+    public const HEALTH = 6;
+    public const TECHNOLOGY = 7;
+    public const SCIENCE = 8;
 
-    public const PASSWORD_OLD = 'password_old';
-    public const PASSWORD_CONFIRMATION = 'password_confirmation';
-    public const PASSWORD_TEMPORARY = 'password_temporary';
+    public const FOOD = 9;
+    public const TOURISM = 10;
+    public const ENVIRONMENT = 11;
+    public const TOP = 12;
 
-    private const MODEL_KEY_R = 'user';
-    public const MODEL_KEY = self::MODEL_KEY_R;
-    public const MODEL_KEY_P = self::MODEL_KEY . 's';
+    public const CATEGORIES = [
+        self::WORLD => 'world',
+        self::POLITICS => 'politics',
+        self::BUSINESS => 'business',
+        self::ENTERTAINMENT => 'entertainment',
+        self::SPORTS => 'sports',
+        self::HEALTH => 'health',
+        self::TECHNOLOGY => 'technology',
+        self::SCIENCE => 'science',
+    ];
+
+    public const CATEGORIES_EXT = [
+        self::FOOD => 'food',
+        self::TOURISM => 'tourism',
+        self::ENVIRONMENT => 'environment',
+        self::TOP => 'top',
+    ];
+
+    public const MODEL_KEY = 'category';
+    public const MODEL_KEY_P = 'categories';
     public const MODEL = [
         parent::MODEL_CLASS => self::class,
         parent::GROUP => parent::NOTSET,
@@ -35,9 +59,7 @@ class User extends AuthModelProps
         parent::FOREIGN_KEY => self::MODEL_KEY . parent::ID_P,
         parent::ATTRIBUTES => [
             parent::ID => ['id'],
-            parent::NAME => ['string', 'nullable'],
-            self::EMAIL => ['string', 'unique'],
-            self::PASSWORD => ['string'],
+            parent::NAME => ['string'],
             TimeProps::CREATED => ['timestamp', 'nullable'],
             TimeProps::UPDATED => ['timestamp', 'nullable'],
         ],
@@ -45,7 +67,6 @@ class User extends AuthModelProps
         parent::RELATIONS => [
             // Direct Relations ...
             UserCategory::class => parent::ONE_TO_MANY,
-            UserCountry::class => parent::ONE_TO_ONE,
         ],
         parent::PARAMETERS => [],
     ];
@@ -70,7 +91,7 @@ class User extends AuthModelProps
      *
      * @var string
      */
-    protected $primaryKey = self::MODEL[parent::PRIMARY_KEY];
+    protected $primaryKey = self::MODEL[self::PRIMARY_KEY];
 
     /**
      * Indicates if the model's ID is auto-incrementing.
@@ -84,7 +105,7 @@ class User extends AuthModelProps
      *
      * @var string
      */
-    protected $keyType = parent::PK_TYPE;
+    protected $keyType = self::PK_TYPE;
 
     /**
      * Indicates if the model should be timestamped.
@@ -99,9 +120,7 @@ class User extends AuthModelProps
      * @var string[]
      */
     protected $fillable = [
-        self::NAME,
-        self::EMAIL,
-        self::PASSWORD,
+        parent::NAME,
     ];
 
     /**
@@ -124,7 +143,6 @@ class User extends AuthModelProps
      * @var array
      */
     protected $hidden = [
-        self::PASSWORD,
         TimeProps::CREATED,
         TimeProps::UPDATED,
     ];
@@ -136,18 +154,13 @@ class User extends AuthModelProps
      */
     protected $casts = [];
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Direct Relations ...
     |--------------------------------------------------------------------------
     */
 
     public function userCategory()
-    {
-        return Models::establishRelation($this, __FUNCTION__);
-    }
-
-    public function userCountry()
     {
         return Models::establishRelation($this, __FUNCTION__);
     }
@@ -168,12 +181,22 @@ class User extends AuthModelProps
         return self::all($attribute)->random()[$attribute];
     }
 
-    public static function authUser()
+    public static function authCategories()
     {
-        $user = collect(auth()->user())->only([
-            User::NAME, User::EMAIL
-        ])->toArray();
+        $userContext = collect(auth()->user()->load([
+            UserCategory::name() . parent::SP . self::name(),
+        ]));
 
-        return collect($user);
+        $categories = collect($userContext[UserCategory::MODEL_KEY] ?? [])
+            ->mapWithKeys(function ($category) {
+                return [$category[self::MODEL_KEY][parent::NAME] => !!$category[UserCategory::STATE]];
+            })->toArray();
+
+        return collect($categories);
+    }
+
+    public static function allCategories()
+    {
+        return self::get([self::NAME]);
     }
 }
