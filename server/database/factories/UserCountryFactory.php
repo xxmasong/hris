@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Http\Props\ModelProps;
+use App\Models\Country;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class UserFactory extends ModelsFactory
+class UserCountryFactory extends ModelsFactory
 {
     /**
      * Build instance of the factory on specified model.
@@ -16,13 +18,13 @@ class UserFactory extends ModelsFactory
     public static function buildFactory(Factory $modelFactory)
     {
         if (!empty($modelFactory)) {
-           User::create([
-                User::NAME => 'Admin Name',
-                User::EMAIL => 'admin@gmail.com',
-                User::PASSWORD => bcrypt('123'),
-            ]);
-            if (config('common.factory_count') > 0) {
-                $modelFactory->count(config('common.factory_count'))->create();
+            if (User::count() > 0 && Country::count() > 0) {
+                collect(User::all())->each(function ($user) use ($modelFactory) {
+                    $modelFactory->state([
+                        User::FOREIGN_ID => $user->id,
+                        Country::FOREIGN_ID => Country::pick(ModelProps::ID),
+                    ])->create();
+                });
             }
         }
     }
@@ -34,10 +36,6 @@ class UserFactory extends ModelsFactory
      */
     public function definition()
     {
-        return [
-            User::NAME => $this->faker->name(),
-            User::EMAIL => $this->faker->unique()->safeEmail(),
-            User::PASSWORD => bcrypt('123'),
-        ];
+        return [];
     }
 }
