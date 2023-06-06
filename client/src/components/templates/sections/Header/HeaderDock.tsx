@@ -41,6 +41,27 @@ function HeaderDock() {
   return (
     <Block>
       <HeaderLogo />
+      <Right>
+        {themeReady && <HeaderThemeButton />}
+        <HeaderSearchButton />
+        {isAccount === "none" &&
+          <RoundButton color="darkGray" onClick={onLogin}>
+            Login
+          </RoundButton>
+        }
+        {isAccount === "has" &&
+          <>
+            <div ref={ref}>
+              <HeaderUserIcon user={user} onClick={toggleUserMenu} />
+            </div>
+            <HeaderUserMenu
+              onClose={onOutsideClick}
+              onLogout={onLogout}
+              visible={userMenu}
+            />
+          </>
+        }
+      </Right>
     </Block>
   );
 }
