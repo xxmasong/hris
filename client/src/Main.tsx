@@ -1,10 +1,18 @@
-import { ComponentType, StrictMode } from 'react';
+import { ComponentType, Fragment, StrictMode } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
+
+import './typography.css';
 
 function Main(App: ComponentType) {
+
   return (
-    <StrictMode>
-      <App />
-    </StrictMode>
+    <Fragment>
+      <StrictMode>
+        <HelmetProvider>
+            <App />
+        </HelmetProvider>
+      </StrictMode>
+    </Fragment>
   );
 }
 
