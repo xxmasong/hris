@@ -5,17 +5,9 @@ namespace App\Providers;
 use App\Http\Messages;
 use App\Http\Models;
 use App\Http\Routes;
-use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Auth\Notifications\VerifyEmail;
-use Illuminate\Auth\Notifications\ResetPassword;
-use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -50,6 +42,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Schema::defaultStringLength(191);
+
         app(Models::class);
         app(Routes::class);
         app(Messages::class);
