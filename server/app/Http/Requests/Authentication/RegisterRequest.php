@@ -25,9 +25,9 @@ class RegisterRequest extends FormRequest
      *
      * @return array
      */
-    public function validated()
+    public function validated($key = null, $default = null)
     {
-        $validData = parent::validated();
+        $validData = parent::validated($key);
         $validData[User::PASSWORD] = bcrypt($validData[User::PASSWORD]);
 
         return [new User($validData), $validData];

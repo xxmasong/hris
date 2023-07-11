@@ -24,9 +24,9 @@ class ArticleRequest extends FormRequest
      *
      * @return array
      */
-    public function validated()
+    public function validated($key = null, $default = null)
     {
-        $validData = parent::validated();
+        $validData = parent::validated($key);
         if (!empty($validData[NewsProps::COUNTRY])) {
             $validData[NewsProps::COUNTRY] = array_intersect(
                 collect(Country::COUNTRIES)->pluck(Country::CODE)->toArray(),

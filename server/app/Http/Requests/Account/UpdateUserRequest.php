@@ -26,9 +26,9 @@ class UpdateUserRequest extends FormRequest
      *
      * @return array
      */
-    public function validated()
+    public function validated($key = null, $default = null)
     {
-        $validData = parent::validated();
+        $validData = parent::validated($key);
         Validator::make(request()->all(), [
             User::EMAIL => [Rule::unique(User::MODEL_KEY_P, User::EMAIL)->ignore($this->user()[User::ID])],
         ])->validated();

@@ -25,9 +25,9 @@ class UpdateCategoryRequest extends FormRequest
      *
      * @return array
      */
-    public function validated()
+    public function validated($key = null, $default = null)
     {
-        $validated = parent::validated();
+        $validated = parent::validated($key);
         if (!empty($validated))
             $validated = [array_key_first($validated) => collect($validated)->first()];
         $userCategory = UserCategory::where(User::FOREIGN_ID, $this->user()->id);
