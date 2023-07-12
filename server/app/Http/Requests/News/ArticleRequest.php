@@ -28,10 +28,14 @@ class ArticleRequest extends FormRequest
     {
         $validData = parent::validated($key);
         if (!empty($validData[NewsProps::COUNTRY])) {
-            $validData[NewsProps::COUNTRY] = array_intersect(
-                collect(Country::COUNTRIES)->pluck(Country::CODE)->toArray(),
-                array_map('strtolower', $validData[NewsProps::COUNTRY]));
-            $validData[NewsProps::COUNTRY] = implode(",", $validData[NewsProps::COUNTRY]);
+            if (collect($validData[NewsProps::COUNTRY])->first() === Country::GLOBAL){
+                unset($validData[NewsProps::COUNTRY]);
+            } else {
+                $validData[NewsProps::COUNTRY] = array_intersect(
+                    collect(Country::COUNTRIES)->pluck(Country::CODE)->toArray(),
+                    array_map('strtolower', $validData[NewsProps::COUNTRY]));
+                $validData[NewsProps::COUNTRY] = implode(",", $validData[NewsProps::COUNTRY]);
+            }
         }
         if (!empty($validData[NewsProps::CATEGORY])) {
             $validData[NewsProps::CATEGORY] = array_intersect(
