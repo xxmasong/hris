@@ -67,6 +67,24 @@ export const homeArticles = async (country?: string[], page?: string|null) => {
   return await articles(form);
 };
 
+export const relatedArticles = async (keywords?: string[]|null, category?: string[], country?: string[], page?: string|null) => {
+  let form = {};  
+  if ((keywords || []).length > 0) {
+    form = {...form, ...{'q': keywords?.join(" OR ")}};
+  }
+  if ((category || []).length > 0) {
+    form = {...form, ...{'category': category}};
+  }
+  if ((country || []).length > 0) {
+    form = {...form, ...{'country': country}};
+  }
+  if (page) {
+    form = {...form, ...{'page': page}};
+  }
+
+  return await articles(form);
+};
+
 export const categoryArticles = async (category: string[], country?: string[], page?: string|null) => {
   let form = {'category': category};
   if ((country || []).length > 0) {

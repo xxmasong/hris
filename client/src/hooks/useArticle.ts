@@ -8,6 +8,7 @@ export default function useArticle(urlTitle?: string) {
   const title = decodeURI(urlTitle || "");
 
   const onLoadArticle = useCallback(async () => {
+    setLoading(true);
     const news = await endpoint({
       "qInTitle": title,
     });
@@ -16,14 +17,13 @@ export default function useArticle(urlTitle?: string) {
     } else {
       preFetchArticle(null);
     }
+    setLoading(false);
   }, [preFetchArticle, title]);
 
   useEffect(() => {
-    setLoading(true);
     if (!article || article?.title !== title) {
       onLoadArticle();
     } 
-    setLoading(false);
   }, [article, title]);
 
   return { article, loading };

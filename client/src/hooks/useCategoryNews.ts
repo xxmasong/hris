@@ -18,10 +18,10 @@ export default function useCategoryNews(category?: string) {
     if (!category) {
       category = "top";
     } 
-    const data = await categoryArticles([category], country, page);
-    if (data?.status === 'success') {
-      updateNewsByCategory(category!, [...(newsByCategory?.[category as keyof typeof newsByCategory] ?? []), ...data.results]);
-      keepNextPageKey(data?.nextPage);
+    const news = await categoryArticles([category], country, page);
+    if (news?.status === 'success') {
+      updateNewsByCategory(category!, [...(newsByCategory?.[category as keyof typeof newsByCategory] ?? []), ...news.results]);
+      keepNextPageKey(news?.nextPage);
     }
     setLoading(false);
   }, [category, newsByCategory, keepNextPageKey, page, updateNewsByCategory]);

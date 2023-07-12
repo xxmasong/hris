@@ -1,7 +1,13 @@
 import { useCallback, useContext } from "react";
 import { NewsContext } from "@/providers/NewsContextProvider";
 import { NewsDataArticle } from "@/types/news";
-import { setNewsArticles, setNewsByCategory, setNewsReadArticle, setNextPage } from "@/store/news";
+import { 
+  setNewsArticles, 
+  setNewsByCategory, 
+  setNewsReadArticle, 
+  setNextPage, 
+  setRelatedNews 
+} from "@/store/news";
 
 export default function useNews() {
   const [news, dispatch] = useContext(NewsContext);
@@ -9,6 +15,12 @@ export default function useNews() {
   const updateArticles = useCallback((articles: NewsDataArticle[]) => {
     if (dispatch) {
       dispatch(setNewsArticles(articles));
+    }
+  }, [dispatch]);
+
+  const updateRelated = useCallback((related: NewsDataArticle[]) => {
+    if (dispatch) {
+      dispatch(setRelatedNews(related));
     }
   }, [dispatch]);
 
@@ -33,10 +45,12 @@ export default function useNews() {
   return {
     sources: news?.sources,
     articles: news?.articles,
+    related: news?.related,
     newsByCategory: news?.newsByCategory,
     article: news?.article,
     page: news?.nextPage,
     updateArticles,
+    updateRelated,
     updateNewsByCategory,
     preFetchArticle,
     keepNextPageKey,

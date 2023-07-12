@@ -5,6 +5,7 @@ import { NewsDataArticle, NewsDataSource } from '@/types/news';
 export interface NewsState {
   sources: NewsDataSource[];
   articles: NewsDataArticle[];
+  related: NewsDataArticle[];
   newsByCategory: {
     top: NewsDataArticle[];
     world: NewsDataArticle[];
@@ -23,6 +24,7 @@ export interface NewsState {
 export const initialNewsState: NewsState = {
   sources: [],
   articles: [],
+  related: [],
   newsByCategory: {
     top: [],
     world: [],
@@ -48,6 +50,9 @@ const news = createSlice({
     setNewsArticles(state, action: PayloadAction<NewsDataArticle[]>) {
       state.articles = action.payload;
     },
+    setRelatedNews(state, action: PayloadAction<NewsDataArticle[]>) {
+      state.related = action.payload;
+    },
     setNewsByCategory(state, action: PayloadAction<{ category: string, articles: NewsDataArticle[] }>) {
       const { category, articles } = action.payload;
       state.newsByCategory[category as keyof typeof state.newsByCategory] = articles;
@@ -62,10 +67,16 @@ const news = createSlice({
 });
 
 export const { 
-    setNewsSources, setNewsArticles, setNewsByCategory, setNewsReadArticle, setNextPage 
-  } = news.actions;
+    setNewsSources, 
+    setNewsArticles, 
+    setRelatedNews, 
+    setNewsByCategory, 
+    setNewsReadArticle, 
+    setNextPage 
+} = news.actions;
 export const newsSources = (state: RootState) => state.news.sources;
 export const newsArticles = (state: RootState) => state.news.articles;
+export const relatedNews = (state: RootState) => state.news.related;
 export const newsByCategory = (
     state: RootState, 
     category: string,

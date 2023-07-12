@@ -15,10 +15,10 @@ export default function useHeadlineNews() {
     if (user && user?.country) {
       country = [user?.country?.code];
     }
-    const data = await homeArticles(country, page);
-    if (data?.status === 'success') {
-      updateArticles([...articles!, ...data.results]);
-      keepNextPageKey(data?.nextPage);
+    const news = await homeArticles(country, page);
+    if (news?.status === 'success') {
+      updateArticles([...articles!, ...news.results]);
+      keepNextPageKey(news?.nextPage);
     }
     setLoading(false);
   }, [user, articles, keepNextPageKey, page, updateArticles]);

@@ -5,7 +5,7 @@ import { themedPalette } from '@/styles/themes';
 import useRelatedNews from '@/hooks/useRelatedNews';
 
 function RelatedArticle() {
-  const { articles, loading} = useRelatedNews();
+  const { related, loading} = useRelatedNews();
 
   return (
     <>
@@ -13,8 +13,8 @@ function RelatedArticle() {
         <Title>Recommended Articles</Title>
         <Wrapper>
           <ArticleCardGrid 
-            articles={articles!}
-            loading={!articles.length || loading}
+            articles={related!}
+            loading={!related!.length || loading}
             forArticle 
           />
         </Wrapper>
